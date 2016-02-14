@@ -15,6 +15,8 @@ public class GameCamera : MonoBehaviour {
 	public float fixed_x;
 	public float fixed_y;
 
+	public bool disabledAllowCamera = false;
+
 	// Singleton mode for camera. If a camera object exists on a subsequent scene, delete it and use the current one.
 	void Awake () {
 		if (gameCamera == null) {
@@ -32,7 +34,7 @@ public class GameCamera : MonoBehaviour {
 
 	// Camera is called in LateUpdate, to give all Update and FixedUpdate calls a chance to complete before the camera is moved.
 	void LateUpdate () {
-		if (GameManager.current.enabled || GameManager.current.disabledAllowCamera) {
+		if (enabled || disabledAllowCamera) {
 			float move = Input.GetAxis ("Horizontal");
 			if (move > 0)
 				right = 1;

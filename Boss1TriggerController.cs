@@ -44,9 +44,9 @@ public class Boss1TriggerController : MonoBehaviour {
 					GameCamera.gameCamera.isFixed = true;
 					GameCamera.gameCamera.fixed_x = -36f;
 					GameCamera.gameCamera.fixed_y = -1f;
-					GameManager.current.disabledAllowCamera = true;
+					GameCamera.gameCamera.disabledAllowCamera = true;
 					boss1Init = true;
-					GameManager.current.enabled = false;
+					GameCamera.gameCamera.enabled = false;
 					PopupController.pop.DisplayDialog (items [currDialog].dialog, items[currDialog].portrait);
 				}
 			}
@@ -57,7 +57,7 @@ public class Boss1TriggerController : MonoBehaviour {
 					PopupController.pop.CycleDialog (items [currDialog].dialog, items[currDialog].portrait);
 				} else if (Input.GetButtonDown ("Fire1") && currDialog == items.Length - 1) {
 					// Last dialog. Enable Mith boss fight.
-					GameManager.current.enabled = true;
+					GameCamera.gameCamera.enabled = true;
 					dialogFinished = true;
 					MithController.mithControl.bossEnabled = true;
 					MithController.mithControl.StartMoving ();
