@@ -3,7 +3,7 @@ using System.Collections;
 
 public class BatController : MonoBehaviour {
 	
-	private GravitonController grav;
+	private AlphaParticleController part;
 	public float maxSpeed = 2f;
 	private bool tracking = false;
 	public bool haveTracked;
@@ -37,10 +37,10 @@ public class BatController : MonoBehaviour {
 		if (collider.gameObject.tag == "Player") {
 			RubiHealth.rubiHealth.TakeDamage(bat_damage);
 		}
-		if (collider.gameObject.tag == "Graviton") {
-			grav = collider.gameObject.GetComponent <GravitonController> ();
-			TakeDamage(grav.damage);
-			grav.hit = true;
+		if (collider.gameObject.tag == "AlphaParticle") {
+			part = collider.gameObject.GetComponent <AlphaParticleController> ();
+			TakeDamage(part.damage);
+			part.hit = true;
 		}
 	}
 	void OnTriggerStay2D (Collider2D collider) {

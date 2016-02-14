@@ -4,7 +4,7 @@ using System.Collections;
 public class ClawController : MonoBehaviour {
 
 	public int claw_health = 2;
-	private GravitonController grav;
+	private AlphaParticleController part;
 	private bool dying;
 
 	private bool facingRight = false;
@@ -140,10 +140,10 @@ public class ClawController : MonoBehaviour {
 				RubiHealth.rubiHealth.TakeDamage(1);
 			}
 		}
-		if (collider.gameObject.tag == "Graviton") {
-			grav = collider.gameObject.GetComponent <GravitonController> ();
-			TakeDamage(grav.damage);
-			grav.hit = true;
+		if (collider.gameObject.tag == "AlphaParticle") {
+			part = collider.gameObject.GetComponent <AlphaParticleController> ();
+			TakeDamage(part.damage);
+			part.hit = true;
 		}
 	}
 	void OnTriggerStay2D (Collider2D collider) {

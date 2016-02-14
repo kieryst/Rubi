@@ -14,7 +14,7 @@ public class DoorController : MonoBehaviour {
 	}
 
 	void OnTriggerEnter2D (Collider2D collider) {
-		if (collider.gameObject.tag == "Graviton" && !opened && powered) {
+		if (collider.gameObject.tag == "AlphaParticle" && !opened && powered) {
 			opened = true;
 			anim.SetBool ("Open", true);
 		}

@@ -24,6 +24,7 @@ public class GameVars : MonoBehaviour {
 	public int currentHealth;
 	public int maxEnergy;
 	public bool haveGraviton;
+	public bool haveAlphaParticle;
 	public bool haveNeutrinoPhase;
 	public bool haveQuartz;
 
@@ -55,6 +56,7 @@ public class GameVars : MonoBehaviour {
 		maxHealth = 10;
 		maxEnergy = 10;
 		haveGraviton = false;
+		haveAlphaParticle = false;
 		haveNeutrinoPhase = false;
 		haveQuartz = false;
 		healthPickups [0] = false;
@@ -79,6 +81,7 @@ public class GameVars : MonoBehaviour {
 		data.currentHealth = currentHealth;
 		data.maxEnergy = maxEnergy;
 		data.haveGraviton = haveGraviton;
+		data.haveAlphaParticle = haveAlphaParticle;
 		data.haveNeutrinoPhase = haveNeutrinoPhase;
 		data.haveQuartz = haveQuartz;
 		data.healthPickups = healthPickups;
@@ -107,6 +110,7 @@ public class GameVars : MonoBehaviour {
 			currentHealth = data.currentHealth;
 			maxEnergy = data.maxEnergy;
 			haveGraviton = data.haveGraviton;
+			haveAlphaParticle = data.haveAlphaParticle;
 			haveNeutrinoPhase = data.haveNeutrinoPhase;
 			haveQuartz = data.haveQuartz;
 			healthPickups = data.healthPickups;
@@ -126,6 +130,7 @@ public class GameVars : MonoBehaviour {
 		maxHealth = 10;
 		maxEnergy = 10;
 		haveGraviton = false;
+		haveAlphaParticle = false;
 		haveQuartz = false;
 		healthPickups [0] = false;
 		healthPickups [1] = false;
@@ -147,6 +152,7 @@ class PlayerData
 	public int currentHealth;
 	public int maxEnergy;
 	public bool haveGraviton;
+	public bool haveAlphaParticle;
 	public bool haveNeutrinoPhase;
 	public bool haveQuartz;
 	public bool[] healthPickups = new bool[2];
