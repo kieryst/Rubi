@@ -275,6 +275,7 @@ public class MithController : MonoBehaviour {
 		currInvuln = false;
 		render.color = new Color(1f, 1f, 1f, 1f);
 	}
+
     // ToDo: Re-work Mith first boss ending sequence. Needs dialog rather than just destroying the object
 	private IEnumerator Die() {
 		GameVars.vars.boss1 = true;
