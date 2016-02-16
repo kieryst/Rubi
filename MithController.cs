@@ -10,13 +10,10 @@ public class MithController : MonoBehaviour {
 
 	private bool facingRight = true;
 
-	public float speed = 600f;
-	public int mithHealth = 12;
+	public float speed;
+	public int mithHealth;
 	private float currInvulnTime;
-	public float invulnTime = 0.5f;
-	public float flashTime = 0.1f;
-	private float currFlashTime;
-	bool flashing;
+	public float invulnTime;
 
 	private float dist_x;
 	private float close_x;
@@ -29,8 +26,8 @@ public class MithController : MonoBehaviour {
 
 	private int x_Vel;
 	private int y_Vel;
-	public float xOffset = 5f;
-	public float yOffset = 5f;
+	public float xOffset;
+	public float yOffset;
 	
 	private float xFinalNorm;
 	private float yFinalNorm;
@@ -38,16 +35,12 @@ public class MithController : MonoBehaviour {
 	public bool bossEnabled = false;
 
 	public bool moving = false;
-	public bool charging = false;
 	public bool phasing = false;
-	public bool phased = false;
 
-	public float timeMoving = 3f;
-	public float fireDelay = 0.25f;
+	public float timeMoving;
+	public float fireDelay;
 	public int fire;
-	private int fireCounter;
-	public float phaseDelay = 0.5f;
-	public float phaseAnim = 0.5f;
+	public float phaseAnim;
 	public float currTime;
 
 	public GameObject muon_collapse;
@@ -55,8 +48,7 @@ public class MithController : MonoBehaviour {
 	public bool dying = false;
 	private bool currInvuln;
 	private AlphaParticleController part;
-
-	public float random;
+	
 	public float phaseX;
 	public float phaseY;
 	public Vector2 mithPhase1;
@@ -85,31 +77,6 @@ public class MithController : MonoBehaviour {
 	}
 
 	void FixedUpdate() {
-
-		// Mith took damage. Toggle invulnerable 'flashing' state for a short while. -or-
-		// Mith is currently phasing to a different point in the fight. Set alpha accordingly.
-		if (currInvuln) {
-			currInvulnTime -= Time.deltaTime;
-			if (currInvulnTime <= 0f) {
-				currInvuln = false;
-			}
-			if (!phasing && !phased && !flashing && currFlashTime > 0) {
-				render.color = new Color(1f, 1f, 1f, 0f);
-				currFlashTime -= Time.deltaTime;
-			} else if (!phasing && !phased && !flashing && currFlashTime <= 0) {
-				flashing = true;
-				currFlashTime = flashTime;
-			} else if (!phasing && !phased && flashing && currFlashTime > 0) {
-				render.color = new Color(1f, 1f, 1f, 1f);
-				currFlashTime -= Time.deltaTime;
-			} else if (!phasing && !phased && flashing && currFlashTime <= 0) {
-				flashing = false;
-				currFlashTime = flashTime;
-			}
-		} else if (!phasing && !phased) {
-			render.color = new Color(1f, 1f, 1f, 1f);
-			flashing = false;
-		}
 
 		if (mithHealth <= 0 && dying != true) {
 			dying = true;
@@ -167,74 +134,11 @@ public class MithController : MonoBehaviour {
 					currTime -= Time.deltaTime;
 				} else {
 					moving = false;
-					random = Random.Range (0f,1f);
+					float random = Random.Range (0f,1f);
 					if (random < 0.5f) {
-						fireCounter = fire;
 						Charging ();
 					} else {
 						StartPhasing ();
-					}
-				}
-			}
-
-			// Attacking state
-			if (charging) {
-				//Mith will fire a number of 'Muon Collapse' projectiles at Rubi in succession.
-				if (fireCounter > 0 && currTime < 0) {
-					GameObject shot = Instantiate (muon_collapse, GetComponent<Rigidbody2D>().position, Quaternion.identity) as GameObject;
-					Vector3 theScale = shot.transform.localScale;
-					// Projectiles are larger than standard Muon Collapse ones.
-					theScale.x = 2;
-					theScale.y = 2;
-					shot.transform.localScale = theScale;
-					fireCounter = fireCounter -1 ;
-					currTime = fireDelay;
-				} else if (fireCounter > 0) {
-					currTime -= Time.deltaTime;
-				} else {
-					// Attacking sequence is over. Transition into Moving or Phasing states.
-					anim.SetBool ("Attacking", false);
-					charging = false;
-					fireCounter = fire;
-					random = Random.Range (0f,1f);
-					if (random < 0.5f) {
-						StartMoving ();
-					} else {
-						StartPhasing ();
-					}
-				}
-			}
-
-			// Teleporting state. Play a short 'channeling' animation before moving Mith.
-			if (phasing) {
-				if (currTime > 0) {
-					currTime -= Time.deltaTime;
-				} else {
-					phasing = false;
-					currTime = phaseDelay;
-					phased = true;
-					anim.SetBool("Phasing", false);
-				}
-			}
-
-			// Teleport Mith.
-			if (phased) {
-				if (currTime > 0) {
-					currTime -= Time.deltaTime;
-				} else {
-					transform.position = new Vector2(phaseX, phaseY);
-					phased = false;
-					random = Random.Range (0f,1f);
-					//Re-enable alpha and hitbox colliders
-					render.color = new Color (1f, 1f, 1f, 1f);
-					foreach (BoxCollider2D bc in colliders) {
-						bc.enabled = true;
-					}
-					// Teleporting over. transition into moving or attacking states.
-					if (random < 0.5f) {
-						StartMoving();
-					} else {
-						Charging();
 					}
 				}
 			}
@@ -260,7 +164,7 @@ public class MithController : MonoBehaviour {
 		if (!currInvuln) 
 		{
 			currInvuln = true;
-			currInvulnTime = invulnTime;
+			StartCoroutine (InvulnFlicker(invulnTime));
 			
 			if (damage >= mithHealth ) {
 				mithHealth = 0;
@@ -274,7 +178,7 @@ public class MithController : MonoBehaviour {
 	//Teleporting. Pick one of 4 points on the fight stage that Mith can teleport to and set coords.
 	void StartPhasing () {
 		anim.SetBool ("Phasing", true);
-		random = Random.Range (0f, 1f);
+		float random = Random.Range (0f, 1f);
 		if (random < 0.25f) {
 			phaseX = mithPhase1.x;
 			phaseY = mithPhase1.y;
@@ -288,7 +192,7 @@ public class MithController : MonoBehaviour {
 			phaseX = mithPhase4.x;
 			phaseY = mithPhase4.y;
 		}
-		currTime = phaseAnim;
+		StartCoroutine (Phasing (phaseAnim));
 		phasing = true;
 	}
 
@@ -301,8 +205,7 @@ public class MithController : MonoBehaviour {
 
 	void Charging () {
 		anim.SetBool ("Attacking", true);
-		currTime = fireDelay;
-		charging = true;
+		StartCoroutine (Attacking ());
 	}
 
 	public void StartMoving () {
@@ -318,6 +221,60 @@ public class MithController : MonoBehaviour {
 		transform.localScale = theScale;
 	}
 
+	private IEnumerator Attacking() {
+		for (int i = 0; i < fire; ++i) {
+			yield return new WaitForSeconds(fireDelay);
+			GameObject shot = Instantiate (muon_collapse, GetComponent<Rigidbody2D>().position, Quaternion.identity) as GameObject;
+			Vector3 theScale = shot.transform.localScale;
+			// Projectiles are larger than standard Muon Collapse ones.
+			theScale.x = 2;
+			theScale.y = 2;
+			shot.transform.localScale = theScale;
+		}
+		anim.SetBool ("Attacking", false);
+		float random = Random.Range (0f,1f);
+		if (random < 0.5f) {
+			StartMoving ();
+		} else {
+			StartPhasing ();
+		}
+	}
+
+	private IEnumerator Phasing(float phasingTime) {
+		yield return new WaitForSeconds(phasingTime);
+		transform.position = new Vector3(phaseX, phaseY, transform.position.z);
+		anim.SetBool ("Phasing", false);
+		phasing = false;
+		render.color = new Color (1f, 1f, 1f, 1f);
+
+		foreach (BoxCollider2D bc in colliders) {
+			bc.enabled = true;
+		}
+		// Teleporting over. transition into moving or attacking states.
+		float random = Random.Range (0f,1f);
+		if (random < 0.5f) {
+			StartMoving();
+		} else {
+			Charging();
+		}
+	}
+
+	private IEnumerator InvulnFlicker(float invulnTime) {
+		float alpha = 1f;
+		for (float t = 0f; t < invulnTime; t += Time.deltaTime) {
+			if (alpha == 1f) {
+				alpha = 0f;
+			} else {
+				alpha = 1f;
+			}
+			if (!phasing) {
+				render.color = new Color(1f, 1f, 1f, alpha);
+			}
+			yield return new WaitForSeconds(0.05f);
+		}
+		currInvuln = false;
+		render.color = new Color(1f, 1f, 1f, 1f);
+	}
     // ToDo: Re-work Mith first boss ending sequence. Needs dialog rather than just destroying the object
 	private IEnumerator Die() {
 		GameVars.vars.boss1 = true;
