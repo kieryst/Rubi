@@ -3,9 +3,7 @@ using UnityEngine.UI;
 using System.Collections;
 
 public class PauseController : MonoBehaviour {
-
-	// Pause will set the game time scale to 0. Will also enable pause menu canvas elements.
-
+	
 	public static PauseController pause;
 
 	public RectTransform pausedPopup;
@@ -33,10 +31,8 @@ public class PauseController : MonoBehaviour {
 	}
 
 	public void Pause () {
-		PopupController.pop.popupText.text = pauseText;
-		PopupController.pop.DisplayPopup();
-		Time.timeScale = 0;
-		GameCamera.gameCamera.enabled = false;
+		PopupController.pop.DisplayPopup(pauseText);
+		GameCamera.gameCamera.pseudoPause = true;
 		image.color = new Color (1f, 1f, 1f, 1f);
 		quitImage.color = new Color (1f, 1f, 1f, 1f);
 		quitBtn.interactable = true;
@@ -44,8 +40,7 @@ public class PauseController : MonoBehaviour {
 	}
 	public void Unpause () {
 		PopupController.pop.HidePopup();
-		Time.timeScale = 1;
-		GameCamera.gameCamera.enabled = true;
+		GameCamera.gameCamera.pseudoPause = false;
 		image.color = new Color (1f, 1f, 1f, 0f);
 		quitImage.color = new Color (1f, 1f, 1f, 0f);
 		quitBtn.interactable = false;

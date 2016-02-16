@@ -11,29 +11,21 @@ public class NeutrinoPhasePowerup : MonoBehaviour {
 	
 	void OnTriggerEnter2D (Collider2D collider) {
 		if (collider.gameObject.tag == "Player") {
-			
+
+			//Pause the game for a short fanfare
+			GameCamera.gameCamera.pseudoPause = true;
 			GameVars.vars.haveNeutrinoPhase = true;
-			
-			Time.timeScale = 0;
-			RubiControllerScript.rubiControl.enabled = false;
 			displayTime = Time.realtimeSinceStartup + 3f;
-			
-			PopupController.pop.popupText.text = "Neutrino Phase Obtained!";
-			PopupController.pop.DisplayPopup();
-			
+			PopupController.pop.DisplayPopup("Neutrino Phase Obtained!");
+			Destroy (gameObject.GetComponent<SpriteRenderer>());
 			collided = true;
 		}
 	}
 	void Update () {
 		if (collided) {
 			if (Time.realtimeSinceStartup >= displayTime) {
-				Time.timeScale = 1;
-				RubiControllerScript.rubiControl.enabled = true;
-				
+				GameCamera.gameCamera.pseudoPause = false;
 				PopupController.pop.HidePopup();
-				
-				collided = false;
-				
 				Destroy (gameObject);
 			}
 		}

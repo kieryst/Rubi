@@ -15,7 +15,7 @@ public class GameCamera : MonoBehaviour {
 	public float fixed_x;
 	public float fixed_y;
 
-	public bool disabledAllowCamera = false;
+	public bool pseudoPause;
 
 	// Singleton mode for camera. If a camera object exists on a subsequent scene, delete it and use the current one.
 	void Awake () {
@@ -34,21 +34,21 @@ public class GameCamera : MonoBehaviour {
 
 	// Camera is called in LateUpdate, to give all Update and FixedUpdate calls a chance to complete before the camera is moved.
 	void LateUpdate () {
-		if (enabled || disabledAllowCamera) {
-			float move = Input.GetAxis ("Horizontal");
+		float move = Input.GetAxis ("Horizontal");
+		if (!pseudoPause) {
 			if (move > 0)
 				right = 1;
 			else if (move < 0)
 				right = -1;
-			if (target && !isFixed) {
-				float x = IncrementTowards (transform.position.x, target.position.x + (right * xOffset), xTrackSpeed);
-				float y = IncrementTowards (transform.position.y, target.position.y, yTrackSpeed);
-				transform.position = new Vector3 (x, y, transform.position.z);
-			} else if (target && isFixed) {
-				float x = IncrementTowards (transform.position.x, fixed_x, xTrackSpeed);
-				float y = IncrementTowards (transform.position.y, fixed_y, yTrackSpeed);
-				transform.position = new Vector3 (x, y, transform.position.z);
-			}
+		}
+		if (target && !isFixed) {
+			float x = IncrementTowards (transform.position.x, target.position.x + (right * xOffset), xTrackSpeed);
+			float y = IncrementTowards (transform.position.y, target.position.y, yTrackSpeed);
+			transform.position = new Vector3 (x, y, transform.position.z);
+		} else if (target && isFixed) {
+			float x = IncrementTowards (transform.position.x, fixed_x, xTrackSpeed);
+			float y = IncrementTowards (transform.position.y, fixed_y, yTrackSpeed);
+			transform.position = new Vector3 (x, y, transform.position.z);
 		}
 	}
 

@@ -6,14 +6,8 @@ public class Boss1TriggerController : MonoBehaviour {
 
 	public bool boss1Triggered = false;
 	private bool boss1Init = false;
-	private bool dialogFinished = false;
-
-	private bool cameraPanned = false;
-
-	public PopupController pop;
 
 	DialogItems[] items;
-
 	int currDialog = 0;
 
 	void Start () {
@@ -44,21 +38,19 @@ public class Boss1TriggerController : MonoBehaviour {
 					GameCamera.gameCamera.isFixed = true;
 					GameCamera.gameCamera.fixed_x = -36f;
 					GameCamera.gameCamera.fixed_y = -1f;
-					GameCamera.gameCamera.disabledAllowCamera = true;
+					GameCamera.gameCamera.pseudoPause = true;
 					boss1Init = true;
-					GameCamera.gameCamera.enabled = false;
-					PopupController.pop.DisplayDialog (items [currDialog].dialog, items[currDialog].portrait);
+					PopupController.pop.DisplayDialog (items [currDialog].dialog, items[currDialog].portrait, false);
 				}
 			}
 			// Cycle dialog
-			if (boss1Triggered && boss1Init && !dialogFinished) {
+			if (boss1Init && MithController.mithControl.bossEnabled == false) {
 				if (Input.GetButtonDown ("Fire1") && currDialog < items.Length - 1) {
 					currDialog += 1;
-					PopupController.pop.CycleDialog (items [currDialog].dialog, items[currDialog].portrait);
+					PopupController.pop.DisplayDialog (items [currDialog].dialog, items[currDialog].portrait, true);
 				} else if (Input.GetButtonDown ("Fire1") && currDialog == items.Length - 1) {
 					// Last dialog. Enable Mith boss fight.
-					GameCamera.gameCamera.enabled = true;
-					dialogFinished = true;
+					GameCamera.gameCamera.pseudoPause = false;
 					MithController.mithControl.bossEnabled = true;
 					MithController.mithControl.StartMoving ();
 					PopupController.pop.HideDialog ();

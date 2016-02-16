@@ -6,34 +6,24 @@ public class AlphaParticlePowerup : MonoBehaviour {
 	
 	private bool collided = false;
 	private float displayTime;
-	Image image;
-	Text textformatting;
 	
 	void OnTriggerEnter2D (Collider2D collider) {
 		if (collider.gameObject.tag == "Player") {
-		
+	
+			//Pause the game for a short fanfare
+			GameCamera.gameCamera.pseudoPause = true;
 			GameVars.vars.haveAlphaParticle = true;
-
-			Time.timeScale = 0;
-			RubiControllerScript.rubiControl.enabled = false;
 			displayTime = Time.realtimeSinceStartup + 3f;
-
-			PopupController.pop.popupText.text = "A lpha Particle Obtained!";
-			PopupController.pop.DisplayPopup();
-
+			PopupController.pop.DisplayPopup("A lpha Particle Obtained!");
+			Destroy (gameObject.GetComponent<SpriteRenderer>());
 			collided = true;
 		}
 	}
 	void Update () {
 		if (collided) {
 			if (Time.realtimeSinceStartup >= displayTime) {
-				Time.timeScale = 1;
-				RubiControllerScript.rubiControl.enabled = true;
-				PopupController.pop.popupText.text = "";
+				GameCamera.gameCamera.pseudoPause = false;
 				PopupController.pop.HidePopup();
-
-				collided = false;
-
 				Destroy (gameObject);
 			}
 		}

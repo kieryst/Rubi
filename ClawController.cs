@@ -81,42 +81,45 @@ public class ClawController : MonoBehaviour {
 		permLeftGround = Physics2D.Raycast (new Vector2 (transform.position.x + side.y*(c.x - s.x/2) + side.x*(c.x - s.x/2), transform.position.y + -side.x*(c.y - s.y/2) + side.y*(c.y - s.y/2)), new Vector2 (1*-side.x, 1*-side.y), 1f, groundMask);
 		Debug.DrawRay (new Vector3 (transform.position.x + side.y*(c.x - s.x/2) + side.x*(c.x - s.x/2), transform.position.y + -side.x*(c.y - s.y/2) + side.y*(c.y - s.y/2), 0), new Vector3 (1*-side.x, 1*-side.y, 0), Color.white, 0);
 
-
-		if (waiting && currTime > 0) {
-			currTime -= Time.deltaTime;
-		} else if (waiting && currTime <= 0) {
-			waiting = false;
-			float action = Random.Range (0f, 1f);
-			if (action < 0.25f && (permLeft.collider == null || permLeft.fraction > margin) && (permLeftGround.collider != null)) {
-				dir = "Left";
-				Move (dir);
-			} else if (action < 0.5f && (permRight.collider == null || permRight.fraction > margin) && (permRightGround.collider != null)) {
-				dir = "Right";
-				Move (dir);
-			} else if (action < 0.5f && (permLeft.collider == null || permLeft.fraction > margin) && (permLeftGround.collider != null)) {
-				dir = "Left";
-				Move (dir);
-			} else {
-				Idle ();
+		if (!GameCamera.gameCamera.pseudoPause) {
+			if (waiting && currTime > 0) {
+				currTime -= Time.deltaTime;
+			} else if (waiting && currTime <= 0) {
+				waiting = false;
+				float action = Random.Range (0f, 1f);
+				if (action < 0.25f && (permLeft.collider == null || permLeft.fraction > margin) && (permLeftGround.collider != null)) {
+					dir = "Left";
+					Move (dir);
+				} else if (action < 0.5f && (permRight.collider == null || permRight.fraction > margin) && (permRightGround.collider != null)) {
+					dir = "Right";
+					Move (dir);
+				} else if (action < 0.5f && (permLeft.collider == null || permLeft.fraction > margin) && (permLeftGround.collider != null)) {
+					dir = "Left";
+					Move (dir);
+				} else {
+					Idle ();
+				}
 			}
-		}
-		if (dir == "Right") {
-			if (permRight.collider != null && permRight.fraction < margin){
-			    Idle ();
-			} else if (permRight.collider == null && permRightGround.collider == null) {
-				Idle ();
+			if (dir == "Right") {
+				if (permRight.collider != null && permRight.fraction < margin) {
+					Idle ();
+				} else if (permRight.collider == null && permRightGround.collider == null) {
+					Idle ();
+				}
 			}
-		}
-		if (dir == "Left") {
-			if (permLeft.collider != null && permLeft.fraction < margin){
-				Idle ();
-			} else if (permLeft.collider == null && permLeftGround.collider == null) {
-				Idle ();
+			if (dir == "Left") {
+				if (permLeft.collider != null && permLeft.fraction < margin) {
+					Idle ();
+				} else if (permLeft.collider == null && permLeftGround.collider == null) {
+					Idle ();
+				}
 			}
-		}
-		if (claw_health <= 0 && dying != true) {
-			dying = true;
-			anim.SetTrigger ("Die");
+			if (claw_health <= 0 && dying != true) {
+				dying = true;
+				anim.SetTrigger ("Die");
+			}
+		} else {
+			Idle ();
 		}
 	}
 

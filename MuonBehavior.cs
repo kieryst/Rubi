@@ -48,6 +48,8 @@ public class MuonBehavior : MonoBehaviour {
 
 	public int muon_health;
 
+	private Vector3 tempVelo;
+
 	void Start () {
 		anim = GetComponent<Animator> ();
 		collider = GetComponent<CircleCollider2D>();
@@ -56,10 +58,14 @@ public class MuonBehavior : MonoBehaviour {
 	}
 
 	void Update () {
-		if (GameCamera.gameCamera.enabled) {
-			float distance = Vector3.Distance (RubiControllerScript.rubiControl.gameObject.transform.position, transform.position);
+		if (!GameCamera.gameCamera.pseudoPause) {
+			if (GetComponent<Rigidbody2D>().isKinematic == true) {
+				GetComponent<Rigidbody2D>().isKinematic = false;
+				GetComponent<Rigidbody2D>().velocity = tempVelo;
+			}
 
 			// Follow Rubi if she is close enough. Also set tracked flag to despawn Muon if Rubi goes too far away.
+			float distance = Vector3.Distance (RubiControllerScript.rubiControl.gameObject.transform.position, transform.position);
 			if (distance <= trackingDistance) {
 				tracking = true;
 				if (!haveTracked) {
@@ -84,7 +90,7 @@ public class MuonBehavior : MonoBehaviour {
 				if (random < healthDropChance) {
 					Instantiate (health_pickup, GetComponent<Rigidbody2D> ().position, Quaternion.identity);
 				}
-				anim.SetTrigger("Die");
+				anim.SetTrigger ("Die");
 			}
 			if (!waiting) {
 				currTime = Random.Range (minTimeBetweenActions, maxTimeBetweenActions);
@@ -112,6 +118,11 @@ public class MuonBehavior : MonoBehaviour {
 			if (haveTracked && (distance >= despawnDistance)) {
 				Destroy (gameObject);
 			}
+		} else {
+			if (!GetComponent<Rigidbody2D>().isKinematic) {
+				tempVelo = GetComponent<Rigidbody2D>().velocity;
+			}
+			GetComponent<Rigidbody2D>().isKinematic = true;
 		}
 	}
 

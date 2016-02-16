@@ -23,7 +23,7 @@ public class BatController : MonoBehaviour {
 	}
 
 	void FixedUpdate () {
-		if (tracking && !dying) {
+		if (tracking && !dying && !GameCamera.gameCamera.pseudoPause) {
 			// Follow Rubi
 			// To-Do: Raycasting to check for line of sight before following?
 			GetComponent<Rigidbody2D>().velocity = (RubiControllerScript.rubiControl.gameObject.transform.position - transform.position).normalized * maxSpeed;
@@ -63,27 +63,26 @@ public class BatController : MonoBehaviour {
 		if (bat_health <= 0 && dying != true) {
 			dying = true;
 			// DestroyBat() will be called via animation event tied to "Die" trigger when it's finished playing.
-			anim.SetTrigger("Die");
+			anim.SetTrigger ("Die");
 		}
 
 		//Flip bat sprite if Rubi is on the other side
 		if ((RubiControllerScript.rubiControl.gameObject.transform.position.x - transform.position.x) < 0f && facingRight) {
-			Vector3 theScale = GetComponent<Rigidbody2D>().transform.localScale;
+			Vector3 theScale = GetComponent<Rigidbody2D> ().transform.localScale;
 			theScale.x *= -1;
-			GetComponent<Rigidbody2D>().transform.localScale = theScale;
+			GetComponent<Rigidbody2D> ().transform.localScale = theScale;
 			facingRight = false;
 		} else if ((RubiControllerScript.rubiControl.gameObject.transform.position.x - transform.position.x) > 0f && !facingRight) {
-			Vector3 theScale = GetComponent<Rigidbody2D>().transform.localScale;
+			Vector3 theScale = GetComponent<Rigidbody2D> ().transform.localScale;
 			theScale.x *= -1;
-			GetComponent<Rigidbody2D>().transform.localScale = theScale;
+			GetComponent<Rigidbody2D> ().transform.localScale = theScale;
 			facingRight = true;
 		}
 
 		// If Rubi is far away, and the bat is not at its spawn, destroy.
 		if (haveTracked && (distance >= despawnDistance)) {
-			Destroy(gameObject);
+			Destroy (gameObject);
 		}
-
 	}
 
 	void TakeDamage (int damage) {
