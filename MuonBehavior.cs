@@ -37,11 +37,7 @@ public class MuonBehavior : MonoBehaviour {
 	private CircleCollider2D collider;
 
 	public bool currInvuln;
-	private float currInvulnTime;
 	public float invulnTime;
-	public float flashTime;
-	private float currFlashTime;
-	bool flashing;
 	SpriteRenderer muonSprite;
 	
 	public float healthDropChance;
@@ -75,13 +71,6 @@ public class MuonBehavior : MonoBehaviour {
 
 			if (distance > lostDistance) {
 				tracking = false;
-			}
-
-			if (currInvuln) {
-				currInvulnTime -= Time.deltaTime;
-				if (currInvulnTime <= 0f) {
-					currInvuln = false;
-				}
 			}
 
 			if (muon_health <= 0 && dying != true) {
@@ -148,19 +137,17 @@ public class MuonBehavior : MonoBehaviour {
 	}
 
 	void TakeDamage (int damage) {
-
 		// Set the damaged flag so the screen will flash.
 		if (!currInvuln) 
 		{
-			currInvuln = true;
-			currInvulnTime = invulnTime;
-				
+			currInvuln = true;				
 			if (damage >= muon_health ) {
 				muon_health = 0;
 			} else {
 				muon_health -= damage;
 				anim.SetBool ("Hurt", true);
 				Instantiate (muon_collapse, GetComponent<Rigidbody2D>().position, Quaternion.identity);
+				StartCoroutine(InvulnFlicker (invulnTime));
 			}
 		}
 	}
@@ -194,28 +181,21 @@ public class MuonBehavior : MonoBehaviour {
 		if (grounded) {
 			GetComponent<Rigidbody2D>().velocity = new Vector2 (0f, GetComponent<Rigidbody2D>().velocity.y);
 		}
-		if (currInvuln) {
-			currInvulnTime -= Time.deltaTime;
-			if (currInvulnTime <= 0f) {
-				currInvuln = false;
+	}
+
+	private IEnumerator InvulnFlicker(float invulnTime) {
+		float alpha = 1f;
+		for (float t = 0f; t < invulnTime; t += Time.deltaTime) {
+			if (alpha == 1f) {
+				alpha = 0f;
+			} else {
+				alpha = 1f;
 			}
-			if (!flashing && currFlashTime > 0) {
-				muonSprite.color = new Color(1f, 1f, 1f, 0f);
-				currFlashTime -= Time.deltaTime;
-			} else if (!flashing && currFlashTime <= 0) {
-				flashing = true;
-				currFlashTime = flashTime;
-			} else if (flashing && currFlashTime > 0) {
-				muonSprite.color = new Color(1f, 1f, 1f, 1f);
-				currFlashTime -= Time.deltaTime;
-			} else if (flashing && currFlashTime <= 0) {
-				flashing = false;
-				currFlashTime = flashTime;
-			}
-		} else {
-			muonSprite.color = new Color(1f, 1f, 1f, 1f);
-			flashing = false;
-			anim.SetBool ("Hurt", false);
+			muonSprite.color = new Color(1f, 1f, 1f, alpha);
+			yield return new WaitForSeconds(0.05f);
 		}
+		currInvuln = false;
+		muonSprite.color = new Color(1f, 1f, 1f, 1f);
+		anim.SetBool ("Hurt", false);
 	}
 }
